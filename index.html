@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Portfolio de Robin Marion, étudiant en BTS Communication. Projets print, digitaux, audiovisuels, direction artistique et analyse.">
+    <title>Robin Marion - Portfolio BTS Communication</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bree+Serif&family=Imperial+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#app">Aller au contenu</a>
+    <div class="page-progress" aria-hidden="true" data-scroll-progress></div>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="#/home" aria-label="Accueil Robin Marion">
+        <span class="brand-mark">RM</span>
+        <span>robinmarioncom</span>
+      </a>
+
+      <button class="menu-button" type="button" data-menu-button aria-expanded="false" aria-controls="site-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" data-nav>
+        <a href="#/home" data-route="home">Accueil</a>
+        <a href="#/projects" data-route="projects">Projets</a>
+        <a href="#/about" data-route="about">À propos</a>
+        <a href="#/contact" data-route="contact">Contact</a>
+      </nav>
+    </header>
+
+    <main id="app" class="app" tabindex="-1" data-app></main>
+
+    <footer class="site-footer">
+      <p>© 2026 by Robin MARION.</p>
+      <div class="footer-links">
+        <a href="#/privacy">Politique de confidentialité</a>
+        <a href="#/accessibility">Déclaration d'accessibilité</a>
+        <a href="#/projects">Tableau synoptique</a>
+      </div>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
