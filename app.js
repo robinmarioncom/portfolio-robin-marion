@@ -1266,7 +1266,7 @@ function homePage() {
           <span class="script">Portfolio</span>
           <h1 class="display-title">Robin<br>Marion</h1>
           <p class="hero-script">Étudiant en communication</p>
-          <p class="lead">Bienvenue sur mon portfolio en ligne. Il rassemble mes projets de première année, mes démarches créatives, mes supports de communication et les preuves de mon évolution professionnelle.</p>
+          <p class="lead">Bienvenue sur mon portfolio en ligne. Il rassemble mes démarches créatives, mes supports de communication et les preuves de mon évolution professionnelle.</p>
           <div class="hero-actions">
             <a class="button" href="#/projects">Voir les projets</a>
             <a class="button secondary" href="#/about">Me découvrir</a>
@@ -1338,8 +1338,6 @@ function homePage() {
 }
 
 function projectsPage() {
-  const filtered = filteredProjects();
-
   return `
     <div class="page-shell">
       <section class="section">
@@ -1355,10 +1353,13 @@ function projectsPage() {
                 <button class="filter-button ${category === activeCategory ? "active" : ""}" type="button" data-filter="${escapeHtml(category)}">${escapeHtml(category)}</button>
               `).join("")}
             </div>
-            <input class="search-field" type="search" value="${escapeHtml(query)}" placeholder="Rechercher un projet" data-search>
+            <label class="sr-only" for="project-search">Rechercher un projet</label>
+            <input class="search-field" id="project-search" type="search" value="${escapeHtml(query)}" placeholder="Rechercher un projet" data-search>
           </div>
 
-          ${filtered.length ? `<div class="project-grid">${filtered.map(projectCard).join("")}</div>` : `<div class="empty-state">Aucun projet ne correspond à cette recherche.</div>`}
+          <div data-project-results>
+            ${projectResultsMarkup()}
+          </div>
 
           <div class="table-wrap" aria-label="Tableau synoptique simplifié">
             <table class="synoptic-table">
@@ -1396,6 +1397,24 @@ function filteredProjects() {
     const haystack = `${project.title} ${project.announcer} ${project.type} ${project.summary}`.toLowerCase();
     return matchesCategory && haystack.includes(query.toLowerCase().trim());
   });
+}
+
+function projectResultsMarkup() {
+  const filtered = filteredProjects();
+  return filtered.length
+    ? `<div class="project-grid">${filtered.map(projectCard).join("")}</div>`
+    : `<div class="empty-state">Aucun projet ne correspond à cette recherche.</div>`;
+}
+
+function updateProjectResults() {
+  const results = document.querySelector("[data-project-results]");
+  if (!results) return;
+
+  results.innerHTML = projectResultsMarkup();
+  document.querySelectorAll("[data-filter]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.filter === activeCategory);
+  });
+  bindTiltCards(results);
 }
 
 function projectCard(project) {
@@ -1636,10 +1655,10 @@ function aboutPage() {
           </div>
 
           <aside class="photo-panel">
-            <div class="photo-placeholder">
-              <span>Photo</span>
-              <small>Emplacement prévu pour une photo de moi</small>
-            </div>
+            <figure class="profile-photo">
+              <img src="./assets/robin-marion-profile.jpg" alt="Robin Marion, étudiant en BTS Communication" width="2316" height="3088" loading="lazy">
+              <figcaption>Robin Marion</figcaption>
+            </figure>
           </aside>
         </div>
       </section>
@@ -1716,7 +1735,7 @@ function contactPage() {
             <p class="section-script">Échanger autour d'un projet</p>
             <p class="lead">Ce portfolio peut être utilisé pour un oral, un entretien, une candidature ou une présentation de projet. Vous pouvez me contacter directement par téléphone ou par e-mail.</p>
             <div class="hero-actions">
-              ${emailReady ? `<a class="button" href="mailto:${contact.email}">Envoyer un e-mail</a>` : `<span class="button muted">E-mail à renseigner</span>`}
+              ${emailReady ? `<a class="button" href="mailto:${contact.email}" target="_blank" rel="noopener">Envoyer un e-mail</a>` : `<span class="button muted">E-mail à renseigner</span>`}
               <a class="button secondary" href="tel:${contact.phone}">Téléphone</a>
               ${contact.linkedin ? `<a class="button secondary" href="${contact.linkedin}" target="_blank" rel="noopener">LinkedIn</a>` : `<span class="button secondary">LinkedIn à renseigner</span>`}
               ${contact.cv ? `<a class="button secondary" href="${contact.cv}" target="_blank" rel="noopener">CV</a>` : `<span class="button secondary">CV à ajouter</span>`}
@@ -1791,7 +1810,7 @@ function bindPageEvents() {
   document.querySelectorAll("[data-filter]").forEach((button) => {
     button.addEventListener("click", () => {
       activeCategory = button.dataset.filter;
-      render();
+      updateProjectResults();
     });
   });
 
@@ -1799,7 +1818,7 @@ function bindPageEvents() {
   if (search) {
     search.addEventListener("input", (event) => {
       query = event.target.value;
-      render();
+      updateProjectResults();
     });
   }
 
@@ -1812,8 +1831,9 @@ function bindPageEvents() {
       const body = encodeURIComponent(`Nom: ${data.get("name")}\nE-mail: ${data.get("email")}\n\n${data.get("message")}`);
       const note = form.querySelector("[data-form-note]");
       if (contact.email) {
-        window.location.href = `mailto:${contact.email}?subject=${subject}&body=${body}`;
-        note.textContent = "Message prêt dans votre logiciel mail.";
+        const mailtoUrl = `mailto:${contact.email}?subject=${subject}&body=${body}`;
+        window.open(mailtoUrl, "_blank", "noopener");
+        note.textContent = "Message prêt dans votre logiciel mail, dans un nouvel onglet.";
       } else {
         note.textContent = "Ajoute ton adresse e-mail dans le fichier app.js pour activer l'envoi.";
       }
@@ -1826,13 +1846,21 @@ function bindPageEvents() {
 function bindLightbox() {
   document.querySelectorAll("[data-lightbox-src]").forEach((button) => {
     button.addEventListener("click", () => {
-      openLightbox(button.dataset.lightboxSrc, button.dataset.lightboxAlt || "Visuel du projet");
+      openLightbox(button.dataset.lightboxSrc, button.dataset.lightboxAlt || "Visuel du projet", button);
     });
   });
 }
 
-function openLightbox(src, alt) {
-  closeLightbox();
+let lightboxTrigger = null;
+
+function getLightboxFocusableElements(lightbox) {
+  return [...lightbox.querySelectorAll("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])")]
+    .filter((element) => !element.hasAttribute("disabled") && element.getAttribute("aria-hidden") !== "true");
+}
+
+function openLightbox(src, alt, trigger) {
+  closeLightbox({ restoreFocus: false });
+  lightboxTrigger = trigger;
 
   const overlay = document.createElement("div");
   overlay.className = "lightbox";
@@ -1854,14 +1882,40 @@ function openLightbox(src, alt) {
   overlay.querySelector(".lightbox-close").focus();
 }
 
-function closeLightbox() {
-  document.querySelector(".lightbox")?.remove();
+function closeLightbox({ restoreFocus = true } = {}) {
+  const lightbox = document.querySelector(".lightbox");
+  if (!lightbox) return;
+
+  lightbox.remove();
   document.body.classList.remove("lightbox-open");
+  if (restoreFocus && lightboxTrigger?.isConnected) {
+    lightboxTrigger.focus();
+  }
+  lightboxTrigger = null;
 }
 
 window.addEventListener("keydown", (event) => {
+  const lightbox = document.querySelector(".lightbox");
+  if (!lightbox) return;
+
   if (event.key === "Escape") {
     closeLightbox();
+    return;
+  }
+
+  if (event.key === "Tab") {
+    const focusable = getLightboxFocusableElements(lightbox);
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 });
 
@@ -1869,7 +1923,7 @@ let revealObserver;
 
 function enhancePage() {
   const animatedItems = document.querySelectorAll(
-    ".section, .project-card, .method-grid article, .media-tile, .fact-list div, .prose-block > div, .side-panel > div, .photo-panel, .contact-panel, .table-wrap"
+    ".project-card, .method-grid article, .media-tile, .fact-list div, .prose-block > div, .side-panel > div, .photo-panel, .contact-panel, .table-wrap"
   );
 
   if (revealObserver) {
@@ -1899,10 +1953,10 @@ function enhancePage() {
   updateChrome();
 }
 
-function bindTiltCards() {
+function bindTiltCards(scope = document) {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  document.querySelectorAll(".project-card").forEach((card) => {
+  scope.querySelectorAll(".project-card").forEach((card) => {
     card.addEventListener("mousemove", (event) => {
       const rect = card.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width - 0.5;

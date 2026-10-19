@@ -58,6 +58,26 @@ button {
   cursor: pointer;
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--red) !important;
+  outline-offset: 4px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .skip-link {
   position: fixed;
   left: 16px;
@@ -304,9 +324,14 @@ button {
 }
 
 .hero-script {
+  display: table;
   margin-top: 12px;
-  color: var(--green);
-  text-shadow: 1px 1px 0 rgba(254, 254, 224, 0.82);
+  padding: 5px 13px 9px;
+  color: var(--cream);
+  background: rgba(0, 0, 0, 0.76);
+  border: 2px solid var(--cream);
+  box-shadow: 4px 4px 0 var(--red);
+  text-shadow: 1px 1px 0 var(--black);
 }
 
 .lead {
@@ -736,14 +761,16 @@ button {
 
 .project-thumb::after {
   content: attr(data-category);
-  width: max-content;
-  max-width: 100%;
+  width: 100%;
   padding: 5px 8px;
   color: var(--cream);
   background: var(--green);
   border: 2px solid var(--cream);
   font-family: "Bree Serif", Georgia, serif;
+  line-height: 1.25;
   text-transform: uppercase;
+  white-space: normal;
+  overflow-wrap: anywhere;
   transition: transform 220ms var(--ease-out);
 }
 
@@ -1298,6 +1325,28 @@ button {
   color: var(--ink-soft);
 }
 
+.profile-photo {
+  margin: 0;
+}
+
+.profile-photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: center;
+  border: 2px solid var(--black);
+  box-shadow: 6px 6px 0 var(--green);
+}
+
+.profile-photo figcaption {
+  margin-top: 14px;
+  color: var(--red);
+  font-family: "Anton", Impact, sans-serif;
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
 .skill-list {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1458,6 +1507,7 @@ button {
   .site-nav {
     position: fixed;
     inset: var(--header-h) 0 0;
+    z-index: 50;
     display: none;
     align-content: start;
     align-items: stretch;
@@ -1465,6 +1515,7 @@ button {
     padding: 18px;
     background: var(--cream);
     border-top: 2px solid var(--black);
+    box-shadow: 0 14px 24px rgba(0, 0, 0, 0.18);
   }
 
   body.menu-open .site-nav {
