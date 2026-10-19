@@ -1704,20 +1704,6 @@ function aboutPage() {
         </div>
       </section>
 
-      <section class="section band">
-        <div class="section-inner intro-grid">
-          <div>
-            <p class="eyebrow">Direction artistique</p>
-            <h2 class="section-title">Sérieux, impact, sensibilité</h2>
-            <p class="section-script">Une identité plus douce dans les détails</p>
-          </div>
-          <div class="poster-stack" aria-hidden="true">
-            <div class="poster red"><strong>Titre</strong><span>Anton - rouge #8e1616</span></div>
-            <div class="poster green"><strong>Sous-titre</strong><span>Script - vert #5f6f52</span></div>
-            <div class="poster cream"><strong>Corps</strong><span>Bree Serif - fond #fefee0</span></div>
-          </div>
-        </div>
-      </section>
     </div>
   `;
 }

@@ -1279,6 +1279,10 @@ textarea:focus-visible {
   align-items: start;
 }
 
+.about-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(270px, 320px);
+}
+
 .profile-panel,
 .photo-panel,
 .contact-panel {
@@ -1286,6 +1290,12 @@ textarea:focus-visible {
   border: 2px solid var(--black);
   background: var(--cream);
   box-shadow: var(--shadow-red);
+}
+
+.photo-panel {
+  width: 100%;
+  max-width: 320px;
+  justify-self: end;
 }
 
 .profile-panel h2,
@@ -1324,8 +1334,8 @@ textarea:focus-visible {
 }
 
 .profile-photo {
-  width: min(100%, 270px);
-  margin: 0 auto;
+  width: min(100%, 250px);
+  margin: 0 0 0 auto;
   padding: 9px;
   border: 2px solid var(--black);
   background: var(--cream);
@@ -1335,7 +1345,7 @@ textarea:focus-visible {
 .profile-photo img {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  height: 312px;
   object-fit: cover;
   object-position: center 28%;
   border: 2px solid var(--black);
@@ -1475,6 +1485,15 @@ textarea:focus-visible {
   .about-layout,
   .contact-layout {
     grid-template-columns: 1fr;
+  }
+
+  .photo-panel {
+    justify-self: stretch;
+    max-width: none;
+  }
+
+  .profile-photo {
+    margin: 0 auto;
   }
 
   .project-grid {
